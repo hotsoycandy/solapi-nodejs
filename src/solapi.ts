@@ -29,7 +29,9 @@ import {
   RequestKakaoChannelTokenResponse,
   SingleMessageSentResponse,
 } from './responses/messageResponses';
-import { GetBlacksResponse } from './responses/getBlacksResponse';
+import { GetBlacksResponse } from './responses/iam/getBlacksResponse';
+import { GetBlockGroupsResponse } from './responses/iam/getBlockGroupsResponse';
+import { GetBlockNumbersResponse } from './responses/iam/getBlockNumbersResponse';
 import {GroupId} from './types/commonTypes';
 import {formatISO} from 'date-fns';
 import ImageToBase64 from 'image-to-base64';
@@ -74,7 +76,15 @@ import {
 import {
   GetBlacksFinalizeRequest,
   GetBlacksRequest,
-} from './requests/getBlacksRequest';
+} from './requests/iam/getBlacksRequest';
+import {
+  GetBlockGroupsFinalizeRequest,
+  GetBlockGroupsRequest
+} from './requests/iam/getBlockGroupsRequest';
+import {
+  GetBlockNumbersFinalizeRequest,
+  GetBlockNumbersRequest
+} from './requests/iam/getBlockNumbersRequest';
 import {
   GetMessagesRequest,
   GetMessagesFinalizeRequest,
@@ -875,6 +885,56 @@ export class SolapiMessageService {
       url: endpoint,
     };
     return defaultFetcher<never, GetBlacksResponse>(
+      this.authInfo,
+      requestConfig,
+    );
+  }
+
+  /**
+   * 수신 거부 그룹 조회
+   * @param data 수신 거부 그룹 조회용 request 데이터
+   * @returns GetBlockGroupsResponse
+   */
+  async getBlockGroups(data?: GetBlockGroupsRequest): Promise<GetBlockGroupsResponse> {
+    let payload: GetBlockGroupsFinalizeRequest = { };
+    if (data) {
+      payload = new GetBlockGroupsFinalizeRequest(data);
+    }
+    const parameter = qs.stringify(payload, {
+      indices: false,
+      addQueryPrefix: true,
+    });
+    const endpoint = `${this.baseUrl}/iam/v1/block/groups${parameter}`;
+    const requestConfig: RequestConfig = {
+      method: 'GET',
+      url: endpoint,
+    };
+    return defaultFetcher<never, GetBlockGroupsResponse>(
+      this.authInfo,
+      requestConfig,
+    );
+  }
+
+  /**
+   * 수신 차단 그룹 별 수신번호 조회
+   * @param data 수신 거부 그룹 별 수신번호 조회용 request 데이터
+   * @returns GetBlockNumbersResponse
+   */
+  async getBlockNumbers(data?: GetBlockNumbersRequest): Promise<GetBlockNumbersResponse> {
+    let payload: GetBlockNumbersFinalizeRequest = { };
+    if (data) {
+      payload = new GetBlockNumbersFinalizeRequest(data);
+    }
+    const parameter = qs.stringify(payload, {
+      indices: false,
+      addQueryPrefix: true,
+    });
+    const endpoint = `${this.baseUrl}/iam/v1/block/numbers${parameter}`;
+    const requestConfig: RequestConfig = {
+      method: 'GET',
+      url: endpoint,
+    };
+    return defaultFetcher<never, GetBlockNumbersResponse>(
       this.authInfo,
       requestConfig,
     );
